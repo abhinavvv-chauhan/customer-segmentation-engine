@@ -10,33 +10,35 @@ def map_segments(df: pd.DataFrame) -> pd.DataFrame:
         ["recency", "frequency", "monetary_value"]
     ].mean()
 
-    # Dynamic assignment based on ranks
-    # Lower recency is better (rank ascending), Higher frequency/monetary is better (rank descending)
-    cluster_means["r_rank"] = cluster_means["recency"].rank(ascending=True)
-    cluster_means["f_rank"] = cluster_means["frequency"].rank(ascending=False)
-    cluster_means["m_rank"] = cluster_means["monetary_value"].rank(ascending=False)
-
-    cluster_means["score"] = (
-        cluster_means["r_rank"] + cluster_means["f_rank"] + cluster_means["m_rank"]
-    )
-
-    # Sort by overall score (lower score = better ranks overall)
-    sorted_clusters = cluster_means.sort_values("score").index.tolist()
-
-    # Ensure we handle exactly 4 clusters (as configured)
-    if len(sorted_clusters) != 4:
+    if len(cluster_means) != 4:
         raise ValueError("Expected exactly 4 clusters for mapping.")
 
+    # 1. Champions: highest monetary value
+    champions_idx = cluster_means["monetary_value"].idxmax()
+    
+    # 2. Hibernating: lowest monetary value
+    hibernating_idx = cluster_means["monetary_value"].idxmin()
+    
+    remaining = [idx for idx in cluster_means.index if idx not in (champions_idx, hibernating_idx)]
+    
+    # Between the remaining two, the one with lower recency (more recent) is "Promising"
+    if cluster_means.loc[remaining[0], "recency"] < cluster_means.loc[remaining[1], "recency"]:
+        promising_idx = remaining[0]
+        at_risk_idx = remaining[1]
+    else:
+        promising_idx = remaining[1]
+        at_risk_idx = remaining[0]
+
     segment_names = {
-        sorted_clusters[0]: "Champions",
-        sorted_clusters[1]: "Loyal Customers",
-        sorted_clusters[2]: "At-Risk High-Value",
-        sorted_clusters[3]: "Hibernating",
+        champions_idx: "Champions",
+        promising_idx: "Promising",
+        at_risk_idx: "At-Risk High-Value",
+        hibernating_idx: "Hibernating",
     }
 
     actions = {
         "Champions": "Reward them. Early adopters for new products.",
-        "Loyal Customers": "Upsell higher value products. Ask for reviews.",
+        "Promising": "Offer personalized recommendations to increase order frequency.",
         "At-Risk High-Value": "Send personalized emails to reconnect, offer renewals.",
         "Hibernating": "Offer standard discounts. Minimal marketing spend.",
     }

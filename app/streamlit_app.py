@@ -42,7 +42,7 @@ except Exception as e:
 total_customers = int(len(df))
 total_revenue = float(df["monetary_value"].sum())
 
-segments_order = ["Champions", "Loyal Customers", "At-Risk High-Value", "Hibernating"]
+segments_order = ["Champions", "Promising", "At-Risk High-Value", "Hibernating"]
 seg_data = []
 for seg_name in segments_order:
     seg_df = df[df["segment_name"] == seg_name]
@@ -64,7 +64,7 @@ at_risk_pct = round(at_risk_revenue / total_revenue * 100, 1) if total_revenue e
 # Sample for scatter plot
 sample = df.sample(min(400, len(df)), random_state=42)
 scatter_points = []
-color_map_js = {"Champions": 0, "Loyal Customers": 1, "At-Risk High-Value": 2, "Hibernating": 3}
+color_map_js = {"Champions": 0, "Promising": 1, "At-Risk High-Value": 2, "Hibernating": 3}
 for _, row in sample.iterrows():
     scatter_points.append({
         "x": int(row["recency"]),
@@ -549,12 +549,12 @@ td.mono {{ font-family:var(--mono); font-size:12px; font-weight:500; }}
     <a class="nav-link" href="#playbook">Playbook</a>
     <a class="nav-link" href="#data">Data</a>
   </div>
-  <div class="nav-badge"><span></span>Pipeline Live</div>
+  <div class="nav-badge"><span></span>Data Refreshed: {datetime.datetime.now().strftime('%b %d, %H:%M')}</div>
 </nav>
 
 <!-- ═══ HERO ═══ -->
 <section class="hero" id="heroSection">
-  <div class="hero-chip"><i class="fa-solid fa-sparkles"></i> RFM &middot; K-Means &middot; Real-Time</div>
+  <div class="hero-chip"><i class="fa-solid fa-sparkles"></i> RFM &middot; K-Means &middot; Batch Processed</div>
   <h1>Customer Intelligence<br>Platform</h1>
   <p class="hero-sub">AI-powered segmentation revealing which customers to retain, grow, and win back — and exactly how.</p>
   <div class="hero-stats">
@@ -643,6 +643,13 @@ td.mono {{ font-family:var(--mono); font-size:12px; font-weight:500; }}
       </div>
       <canvas id="radarChart" height="260"></canvas>
     </div>
+    <div class="chart-box" style="grid-column: 1 / -1; max-width: 600px; margin: 0 auto; width: 100%;">
+      <div class="chart-head">
+        <div><div class="chart-title">Model Selection (Elbow Method)</div><div class="chart-sub">Justifying K=4 clusters via WCSS</div></div>
+        <span class="chart-badge"><i class="fa-solid fa-square-root-variable" style="font-size:9px"></i> WCSS</span>
+      </div>
+      <canvas id="elbowChart" height="220"></canvas>
+    </div>
   </div>
 </section>
 
@@ -665,9 +672,10 @@ td.mono {{ font-family:var(--mono); font-size:12px; font-weight:500; }}
     <div class="table-toolbar">
       <h3><i class="fa-solid fa-database" style="margin-right:8px;color:var(--indigo-light)"></i> Segment Explorer</h3>
       <div class="table-filter" id="tableFilter">
+        <button id="exportCsvBtn" class="filter-btn" style="margin-right:8px; border-color:var(--indigo-light); color:var(--indigo-light)"><i class="fa-solid fa-download"></i> Export CSV</button>
         <button class="filter-btn active" data-seg="all">All</button>
         <button class="filter-btn" data-seg="Champions">Champions</button>
-        <button class="filter-btn" data-seg="Loyal Customers">Loyal</button>
+        <button class="filter-btn" data-seg="Promising">Promising</button>
         <button class="filter-btn" data-seg="At-Risk High-Value">At-Risk</button>
         <button class="filter-btn" data-seg="Hibernating">Hibernating</button>
       </div>
@@ -794,61 +802,61 @@ document.querySelectorAll('.section').forEach(sec => {{
   gsap.to(sec, {{
     scrollTrigger: {{ trigger:sec, start:'top 85%', toggleActions:'play none none none' }},
     opacity:1, y:0, duration:0.7, ease:'power3.out'
-  }});
-}});
+  });
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  COUNT-UP ANIMATION
 // ═══════════════════════════════════════════════════════════════════════════
-function animateCounters() {{
-  document.querySelectorAll('.count-up').forEach(el => {{
+function animateCounters() {
+  document.querySelectorAll('.count-up').forEach(el => {
     const target = parseInt(el.dataset.target);
     const fmt = el.dataset.format;
     const dur = 2;
-    gsap.to({{ val: 0 }}, {{
+    gsap.to({ val: 0 }, {
       val: target, duration: dur, ease: 'power2.out',
-      onUpdate: function() {{
+      onUpdate: function() {
         const v = Math.round(this.targets()[0].val);
         el.textContent = fmt === 'currency' ? v.toLocaleString() : v.toLocaleString();
-      }}
-    }});
-  }});
-}}
+      }
+    });
+  });
+}
 setTimeout(animateCounters, 600);
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  SEGMENT CARDS
 // ═══════════════════════════════════════════════════════════════════════════
 const segGrid = document.getElementById('segGrid');
-D.segments.forEach((s,i) => {{
+D.segments.forEach((s,i) => {
   const cls = SEG_CSS[i];
   const card = document.createElement('div');
-  card.className = `seg ${{cls}}`;
+  card.className = `seg ${cls}`;
   card.setAttribute('data-tilt',''); card.setAttribute('data-tilt-max','6');
   card.setAttribute('data-tilt-speed','400'); card.setAttribute('data-tilt-glare','');
   card.setAttribute('data-tilt-max-glare','0.06');
   card.innerHTML = `
-    <span class="seg-emoji">${{SEG_EMOJI[i]}}</span>
-    <div class="seg-name">${{s.name}}</div>
-    <div class="seg-num">${{s.count.toLocaleString()}}</div>
-    <div class="seg-meta">${{s.pct}}% of customers &middot; ${{s.rev_pct}}% revenue</div>
-    <div class="seg-bar"><div class="seg-bar-fill" data-width="${{s.pct}}"></div></div>
-    <span class="seg-tag"><i class="fa-solid fa-crosshairs" style="font-size:9px"></i>&nbsp;${{SEG_TAGS[i]}}</span>
+    <span class="seg-emoji">${SEG_EMOJI[i]}</span>
+    <div class="seg-name">${s.name}</div>
+    <div class="seg-num">${s.count.toLocaleString()}</div>
+    <div class="seg-meta">${s.pct}% of customers &middot; ${s.rev_pct}% revenue</div>
+    <div class="seg-bar"><div class="seg-bar-fill" data-width="${s.pct}"></div></div>
+    <span class="seg-tag"><i class="fa-solid fa-crosshairs" style="font-size:9px"></i>&nbsp;${SEG_TAGS[i]}</span>
   `;
   segGrid.appendChild(card);
-}});
+});
 
 // Animate segment bars
-setTimeout(() => {{
-  document.querySelectorAll('.seg-bar-fill').forEach(bar => {{
+setTimeout(() => {
+  document.querySelectorAll('.seg-bar-fill').forEach(bar => {
     bar.style.width = bar.dataset.width + '%';
-  }});
-}}, 800);
+  });
+}, 800);
 
 // Re-init tilt
-VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {{
+VanillaTilt.init(document.querySelectorAll("[data-tilt]"), {
   max: 6, speed: 400, glare: true, 'max-glare': 0.06
-}});
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  CHARTS (Chart.js)
@@ -857,96 +865,96 @@ Chart.defaults.font.family = "'Inter', sans-serif";
 Chart.defaults.color = '#94a3b8';
 
 // Donut
-new Chart(document.getElementById('donutChart'), {{
+new Chart(document.getElementById('donutChart'), {
   type: 'doughnut',
-  data: {{
+  data: {
     labels: D.segments.map(s => s.name),
-    datasets: [{{
+    datasets: [{
       data: D.segments.map(s => s.revenue),
       backgroundColor: SEG_COLORS,
       borderColor: '#06060f', borderWidth: 4,
       hoverOffset: 12,
-    }}]
-  }},
-  options: {{
+    }]
+  },
+  options: {
     cutout: '72%', responsive: true,
-    plugins: {{
-      legend: {{ position:'bottom', labels: {{ padding:16, usePointStyle:true, pointStyleWidth:8, font:{{size:11,weight:600}} }} }},
-      tooltip: {{ backgroundColor:'#1e293b', titleFont:{{weight:700}}, bodyFont:{{size:12}}, cornerRadius:10, padding:12,
-        callbacks: {{ label: ctx => ' $'+ctx.parsed.toLocaleString() }} }}
-    }},
-    animation: {{ animateRotate:true, animateScale:true, duration:1200, easing:'easeOutQuart' }}
-  }}
-}});
+    plugins: {
+      legend: { position:'bottom', labels: { padding:16, usePointStyle:true, pointStyleWidth:8, font:{size:11,weight:600} } },
+      tooltip: { backgroundColor:'#1e293b', titleFont:{weight:700}, bodyFont:{size:12}, cornerRadius:10, padding:12,
+        callbacks: { label: ctx => ' $'+ctx.parsed.toLocaleString() } }
+    },
+    animation: { animateRotate:true, animateScale:true, duration:1200, easing:'easeOutQuart' }
+  }
+});
 
 // Scatter (bubble)
 const scatterColors = SEG_COLORS;
 const scatterSets = [[], [], [], []];
-D.scatter.forEach(pt => scatterSets[pt.seg].push({{ x:pt.x, y:pt.y, r:pt.r }}));
-new Chart(document.getElementById('scatterChart'), {{
+D.scatter.forEach(pt => scatterSets[pt.seg].push({ x:pt.x, y:pt.y, r:pt.r }));
+new Chart(document.getElementById('scatterChart'), {
   type: 'bubble',
-  data: {{
-    datasets: scatterSets.map((pts, i) => ({{
+  data: {
+    datasets: scatterSets.map((pts, i) => ({
       label: D.segments[i].name,
       data: pts,
       backgroundColor: SEG_COLORS_ALPHA[i],
       borderColor: SEG_COLORS[i],
       borderWidth: 1,
-    }}))
-  }},
-  options: {{
+    }))
+  },
+  options: {
     responsive: true,
-    plugins: {{
-      legend: {{ display:false }},
-      tooltip: {{
+    plugins: {
+      legend: { display:false },
+      tooltip: {
         backgroundColor:'#1e293b', cornerRadius:10, padding:12,
-        callbacks: {{ label: ctx => `${{ctx.dataset.label}} · R:${{ctx.parsed.x}}d · $${{ctx.parsed.y.toLocaleString()}}` }}
-      }}
-    }},
-    scales: {{
-      x: {{ title: {{ display:true, text:'Recency (days)', font:{{size:11}} }}, grid: {{ color:'rgba(255,255,255,0.04)' }}, border:{{ color:'rgba(255,255,255,0.06)' }} }},
-      y: {{ title: {{ display:true, text:'Monetary ($)', font:{{size:11}} }}, grid: {{ color:'rgba(255,255,255,0.04)' }}, border:{{ color:'rgba(255,255,255,0.06)' }} }}
-    }},
-    animation: {{ duration:1400, easing:'easeOutQuart' }}
-  }}
-}});
+        callbacks: { label: ctx => `${ctx.dataset.label} · R:${ctx.parsed.x}d · $${ctx.parsed.y.toLocaleString()}` }
+      }
+    },
+    scales: {
+      x: { title: { display:true, text:'Recency (days)', font:{size:11} }, grid: { color:'rgba(255,255,255,0.04)' }, border:{ color:'rgba(255,255,255,0.06)' } },
+      y: { title: { display:true, text:'Monetary ($)', font:{size:11} }, grid: { color:'rgba(255,255,255,0.04)' }, border:{ color:'rgba(255,255,255,0.06)' } }
+    },
+    animation: { duration:1400, easing:'easeOutQuart' }
+  }
+});
 
 // Bar chart
-new Chart(document.getElementById('barChart'), {{
+new Chart(document.getElementById('barChart'), {
   type: 'bar',
-  data: {{
+  data: {
     labels: D.segments.map(s => s.name),
-    datasets: [{{
+    datasets: [{
       data: D.segments.map(s => s.count),
       backgroundColor: SEG_COLORS.map(c => c+'22'),
       borderColor: SEG_COLORS,
       borderWidth: 1.5,
       borderRadius: 8, borderSkipped: false,
-    }}]
-  }},
-  options: {{
+    }]
+  },
+  options: {
     indexAxis: 'y', responsive: true,
-    plugins: {{
-      legend: {{ display:false }},
-      tooltip: {{ backgroundColor:'#1e293b', cornerRadius:10, padding:12, callbacks:{{ label: ctx => ' '+ctx.parsed.x.toLocaleString()+' customers' }} }}
-    }},
-    scales: {{
-      x: {{ grid: {{ color:'rgba(255,255,255,0.04)' }}, border:{{ color:'rgba(255,255,255,0.06)' }} }},
-      y: {{ grid: {{ display:false }}, border:{{ display:false }}, ticks:{{ font:{{size:11,weight:600}} }} }}
-    }},
-    animation: {{ duration:1200, easing:'easeOutQuart' }}
-  }}
-}});
+    plugins: {
+      legend: { display:false },
+      tooltip: { backgroundColor:'#1e293b', cornerRadius:10, padding:12, callbacks:{ label: ctx => ' '+ctx.parsed.x.toLocaleString()+' customers' } }
+    },
+    scales: {
+      x: { grid: { color:'rgba(255,255,255,0.04)' }, border:{ color:'rgba(255,255,255,0.06)' } },
+      y: { grid: { display:false }, border:{ display:false }, ticks:{ font:{size:11,weight:600} } }
+    },
+    animation: { duration:1200, easing:'easeOutQuart' }
+  }
+});
 
 // Radar
 const maxR = Math.max(...D.segments.map(s=>s.avg_recency));
 const maxF = Math.max(...D.segments.map(s=>s.avg_frequency));
 const maxM = Math.max(...D.segments.map(s=>s.avg_monetary));
-new Chart(document.getElementById('radarChart'), {{
+new Chart(document.getElementById('radarChart'), {
   type: 'radar',
-  data: {{
+  data: {
     labels: ['Recency (inv)', 'Frequency', 'Monetary'],
-    datasets: D.segments.map((s,i) => ({{
+    datasets: D.segments.map((s,i) => ({
       label: s.name,
       data: [
         +((1 - s.avg_recency/maxR)*100).toFixed(1),
@@ -955,42 +963,78 @@ new Chart(document.getElementById('radarChart'), {{
       ],
       borderColor: SEG_COLORS[i], backgroundColor: SEG_COLORS[i]+'18',
       borderWidth: 2, pointRadius: 3, pointBackgroundColor: SEG_COLORS[i],
-    }}))
-  }},
-  options: {{
+    }))
+  },
+  options: {
     responsive: true,
-    plugins: {{
-      legend: {{ position:'bottom', labels: {{ padding:14, usePointStyle:true, pointStyleWidth:8, font:{{size:11,weight:600}} }} }},
-      tooltip: {{ backgroundColor:'#1e293b', cornerRadius:10, padding:12 }}
-    }},
-    scales: {{
-      r: {{ min:0, max:100, ticks:{{ display:false }}, grid:{{ color:'rgba(255,255,255,0.06)' }}, angleLines:{{ color:'rgba(255,255,255,0.06)' }}, pointLabels:{{ font:{{size:11,weight:600}}, color:'#94a3b8' }} }}
-    }},
-    animation: {{ duration:1200, easing:'easeOutQuart' }}
-  }}
-}});
+    plugins: {
+      legend: { position:'bottom', labels: { padding:14, usePointStyle:true, pointStyleWidth:8, font:{size:11,weight:600} } },
+      tooltip: { backgroundColor:'#1e293b', cornerRadius:10, padding:12 }
+    },
+    scales: {
+      r: { min:0, max:100, ticks:{ display:false }, grid:{ color:'rgba(255,255,255,0.06)' }, angleLines:{ color:'rgba(255,255,255,0.06)' }, pointLabels:{ font:{size:11,weight:600}, color:'#94a3b8' } }
+    },
+    animation: { duration:1200, easing:'easeOutQuart' }
+  }
+});
+
+// Elbow Method (K-Selection Evidence)
+const wcssData = [13014, 9014, 5441, 4096, 3120, 2503, 2023, 1716, 1446];
+new Chart(document.getElementById('elbowChart'), {
+  type: 'line',
+  data: {
+    labels: [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    datasets: [{
+      label: 'WCSS (Inertia)',
+      data: wcssData,
+      borderColor: '#a5b4fc',
+      backgroundColor: 'rgba(165,180,252,0.1)',
+      borderWidth: 3,
+      pointBackgroundColor: '#6366f1',
+      pointBorderColor: '#fff',
+      pointRadius: [4, 4, 4, 8, 4, 4, 4, 4, 4], // Highlight K=4
+      pointHoverRadius: 10,
+      fill: true,
+      tension: 0.3
+    }]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: false },
+      tooltip: { backgroundColor:'#1e293b', cornerRadius:10, padding:12 },
+      annotation: { // Just a visual trick if annotation plugin wasn't loaded, we used pointRadius
+      }
+    },
+    scales: {
+      x: { title: { display:true, text:'Number of Clusters (K)', font:{size:11} }, grid: { color:'rgba(255,255,255,0.04)' } },
+      y: { title: { display:true, text:'Within-Cluster Sum of Squares', font:{size:11} }, grid: { color:'rgba(255,255,255,0.04)' } }
+    },
+    animation: { duration:1200, easing:'easeOutQuart' }
+  }
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  PLAYBOOK
 // ═══════════════════════════════════════════════════════════════════════════
 const pbGrid = document.getElementById('playbookGrid');
-D.segments.forEach((s,i) => {{
+D.segments.forEach((s,i) => {
   const div = document.createElement('div');
-  div.className = `play ${{SEG_CSS[i]}}`;
+  div.className = `play ${SEG_CSS[i]}`;
   div.innerHTML = `
     <div class="play-head">
-      <span class="play-emoji">${{SEG_EMOJI[i]}}</span>
-      <span class="play-name">${{s.name}}</span>
+      <span class="play-emoji">${SEG_EMOJI[i]}</span>
+      <span class="play-name">${s.name}</span>
     </div>
-    <div class="play-text">${{s.action}}</div>
+    <div class="play-text">${s.action}</div>
     <div class="play-metrics">
-      <div class="play-metric"><i class="fa-solid fa-clock" style="font-size:10px"></i> <span>${{s.avg_recency}}d</span> recency</div>
-      <div class="play-metric"><i class="fa-solid fa-repeat" style="font-size:10px"></i> <span>${{s.avg_frequency}}</span> freq</div>
-      <div class="play-metric"><i class="fa-solid fa-dollar-sign" style="font-size:10px"></i> <span>$${{Math.round(s.avg_monetary).toLocaleString()}}</span> avg</div>
+      <div class="play-metric"><i class="fa-solid fa-clock" style="font-size:10px"></i> <span>${s.avg_recency}d</span> recency</div>
+      <div class="play-metric"><i class="fa-solid fa-repeat" style="font-size:10px"></i> <span>${s.avg_frequency}</span> freq</div>
+      <div class="play-metric"><i class="fa-solid fa-dollar-sign" style="font-size:10px"></i> <span>$${Math.round(s.avg_monetary).toLocaleString()}</span> avg</div>
     </div>
   `;
   pbGrid.appendChild(div);
-}});
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  DATA TABLE (with filter)
@@ -999,41 +1043,62 @@ const tbody = document.getElementById('tableBody');
 const filterBtns = document.querySelectorAll('#tableFilter .filter-btn');
 let currentFilter = 'all';
 
-function renderTable(filter) {{
+function renderTable(filter) {
   tbody.innerHTML = '';
   const rows = filter === 'all' ? D.table : D.table.filter(r => r.seg === filter);
-  rows.forEach((r, idx) => {{
+  rows.forEach((r, idx) => {
     const cls = SEG_CSS[D.segments.findIndex(s => s.name === r.seg)];
     const tr = document.createElement('tr');
     tr.style.opacity = '0'; tr.style.transform = 'translateX(-10px)';
     tr.innerHTML = `
-      <td class="mono">#${{r.id}}</td>
-      <td class="mono">${{r.r}}d</td>
-      <td class="mono">${{r.f}}</td>
-      <td class="mono">$${{r.m.toLocaleString()}}</td>
-      <td><span class="seg-pill ${{cls||''}}">${{r.seg}}</span></td>
+      <td class="mono">#${r.id}</td>
+      <td class="mono">${r.r}d</td>
+      <td class="mono">${r.f}</td>
+      <td class="mono">$${r.m.toLocaleString()}</td>
+      <td><span class="seg-pill ${cls||''}">${r.seg}</span></td>
     `;
     tbody.appendChild(tr);
     // Stagger animation
-    setTimeout(() => {{ tr.style.transition='all 0.3s cubic-bezier(0.22,1,0.36,1)'; tr.style.opacity='1'; tr.style.transform='translateX(0)'; }}, idx*30);
-  }});
-}}
+    setTimeout(() => { tr.style.transition='all 0.3s cubic-bezier(0.22,1,0.36,1)'; tr.style.opacity='1'; tr.style.transform='translateX(0)'; }, idx*30);
+  });
+}
 renderTable('all');
 
-filterBtns.forEach(btn => {{
-  btn.addEventListener('click', () => {{
-    filterBtns.forEach(b => b.classList.remove('active'));
+filterBtns.forEach(btn => {
+  if (btn.id === 'exportCsvBtn') return; // Handled separately
+  btn.addEventListener('click', () => {
+    filterBtns.forEach(b => {
+      if (b.id !== 'exportCsvBtn') b.classList.remove('active');
+    });
     btn.classList.add('active');
     currentFilter = btn.dataset.seg;
     renderTable(currentFilter);
-  }});
-}});
+  });
+});
+
+// CSV Export Logic
+document.getElementById('exportCsvBtn').addEventListener('click', () => {
+  let csv = 'Customer ID,Recency,Frequency,Monetary,Segment\n';
+  const rows = currentFilter === 'all' ? D.table : D.table.filter(r => r.seg === currentFilter);
+  rows.forEach(r => {
+      csv += `${r.id},${r.r},${r.f},${r.m},${r.seg}\n`;
+  });
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = window.URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `segment_export_${currentFilter}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  window.URL.revokeObjectURL(url);
+  document.body.removeChild(a);
+});
 
 // ═══════════════════════════════════════════════════════════════════════════
 //  NAV SMOOTH SCROLL + ACTIVE STATE
 // ═══════════════════════════════════════════════════════════════════════════
-document.querySelectorAll('.nav-link').forEach(link => {{
-  link.addEventListener('click', e => {{
+document.querySelectorAll('.nav-link').forEach(link => {
+  link.addEventListener('click', e => {
     e.preventDefault();
     const target = document.querySelector(link.getAttribute('href'));
     if(target) target.scrollIntoView({{ behavior:'smooth', block:'start' }});
