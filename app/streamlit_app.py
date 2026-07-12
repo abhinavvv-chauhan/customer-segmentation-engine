@@ -27,11 +27,13 @@ st.markdown(
     unsafe_allow_html=True,
 )
 
+import pandas as pd
+
 # ── Load data ────────────────────────────────────────────────────────────────
 @st.cache_data(ttl=300)
 def load_data():
-    with duckdb.connect(str(DB_PATH), read_only=True) as con:
-        return con.execute("SELECT * FROM customer_segments").df()
+    parquet_path = BASE_DIR / "warehouse" / "customer_segments.parquet"
+    return pd.read_parquet(parquet_path)
 
 try:
     df = load_data()

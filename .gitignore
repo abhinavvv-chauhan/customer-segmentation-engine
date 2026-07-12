@@ -16,3 +16,5 @@ dbt/logs/
 .DS_Store
 .env
 uv.lock
+
+!warehouse/customer_segments.parquet

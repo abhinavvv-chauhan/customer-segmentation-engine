@@ -25,6 +25,10 @@ def load_rfm_data() -> pd.DataFrame:
 
 
 def save_segments(df: pd.DataFrame) -> None:
-    """Save customer segments back to DuckDB."""
+    """Save customer segments back to DuckDB and as a Parquet file for Streamlit."""
     with duckdb.connect(str(DB_PATH)) as con:
         con.execute("CREATE OR REPLACE TABLE customer_segments AS SELECT * FROM df")
+    
+    # Save as parquet to avoid duckdb out-of-memory segfaults in Streamlit Cloud
+    parquet_path = DB_PATH.parent / "customer_segments.parquet"
+    df.to_parquet(parquet_path, index=False)
