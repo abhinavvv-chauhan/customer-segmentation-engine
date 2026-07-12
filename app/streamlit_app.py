@@ -350,8 +350,8 @@ body {{
 }}
 .seg.champions  {{ background:rgba(99,102,241,0.06);  }}
 .seg.champions::before  {{ background:linear-gradient(90deg,var(--indigo),#818cf8); }}
-.seg.loyal      {{ background:rgba(6,182,212,0.05);   }}
-.seg.loyal::before      {{ background:linear-gradient(90deg,var(--cyan),#22d3ee);   }}
+.seg.promising      {{ background:rgba(6,182,212,0.05);   }}
+.seg.promising::before      {{ background:linear-gradient(90deg,var(--cyan),#22d3ee);   }}
 .seg.atrisk     {{ background:rgba(245,158,11,0.05);  }}
 .seg.atrisk::before     {{ background:linear-gradient(90deg,var(--amber),#fbbf24);  }}
 .seg.hibernating{{ background:rgba(100,116,139,0.05); }}
@@ -360,7 +360,7 @@ body {{
 .seg-emoji {{ font-size:2rem; margin-bottom:14px; display:block; }}
 .seg-name  {{ font-size:13px; font-weight:700; margin-bottom:2px; }}
 .seg.champions .seg-name   {{ color:var(--indigo-light); }}
-.seg.loyal .seg-name       {{ color:var(--cyan-light); }}
+.seg.promising .seg-name       {{ color:var(--cyan-light); }}
 .seg.atrisk .seg-name      {{ color:var(--amber-light); }}
 .seg.hibernating .seg-name {{ color:var(--slate-light); }}
 .seg-num {{
@@ -377,7 +377,7 @@ body {{
   transition:width 1.2s var(--ease);
 }}
 .seg.champions .seg-bar-fill   {{ background:var(--indigo); }}
-.seg.loyal .seg-bar-fill       {{ background:var(--cyan); }}
+.seg.promising .seg-bar-fill       {{ background:var(--cyan); }}
 .seg.atrisk .seg-bar-fill      {{ background:var(--amber); }}
 .seg.hibernating .seg-bar-fill {{ background:var(--slate); }}
 .seg-tag {{
@@ -387,7 +387,7 @@ body {{
   text-transform:uppercase; letter-spacing:0.06em;
 }}
 .seg.champions .seg-tag   {{ background:rgba(99,102,241,0.15); color:var(--indigo-light); }}
-.seg.loyal .seg-tag       {{ background:rgba(6,182,212,0.15); color:var(--cyan-light); }}
+.seg.promising .seg-tag       {{ background:rgba(6,182,212,0.15); color:var(--cyan-light); }}
 .seg.atrisk .seg-tag      {{ background:rgba(245,158,11,0.15); color:var(--amber-light); }}
 .seg.hibernating .seg-tag {{ background:rgba(100,116,139,0.15); color:var(--slate-light); }}
 
@@ -426,9 +426,9 @@ body {{
 .play.champions  {{ background:rgba(99,102,241,0.05); }}
 .play.champions::before  {{ background:var(--indigo); }}
 .play.champions:hover    {{ border-color:rgba(99,102,241,0.3); box-shadow:0 16px 48px rgba(99,102,241,0.12); }}
-.play.loyal      {{ background:rgba(6,182,212,0.04); }}
-.play.loyal::before      {{ background:var(--cyan); }}
-.play.loyal:hover        {{ border-color:rgba(6,182,212,0.3); box-shadow:0 16px 48px rgba(6,182,212,0.1); }}
+.play.promising      {{ background:rgba(6,182,212,0.04); }}
+.play.promising::before      {{ background:var(--cyan); }}
+.play.promising:hover        {{ border-color:rgba(6,182,212,0.3); box-shadow:0 16px 48px rgba(6,182,212,0.1); }}
 .play.atrisk     {{ background:rgba(245,158,11,0.04); }}
 .play.atrisk::before     {{ background:var(--amber); }}
 .play.atrisk:hover       {{ border-color:rgba(245,158,11,0.3); box-shadow:0 16px 48px rgba(245,158,11,0.1); }}
@@ -439,7 +439,7 @@ body {{
 .play-emoji {{ font-size:1.4rem; }}
 .play-name {{ font-size:13px; font-weight:700; }}
 .play.champions .play-name   {{ color:var(--indigo-light); }}
-.play.loyal .play-name       {{ color:var(--cyan-light); }}
+.play.promising .play-name       {{ color:var(--cyan-light); }}
 .play.atrisk .play-name      {{ color:var(--amber-light); }}
 .play.hibernating .play-name {{ color:var(--slate-light); }}
 .play-text {{ font-size:13px; color:var(--text-2); line-height:1.6; }}
@@ -493,7 +493,7 @@ tbody tr:hover {{ background:var(--bg-hover); }}
   letter-spacing:0.04em;
 }}
 .seg-pill.champions   {{ background:rgba(99,102,241,0.15); color:var(--indigo-light); }}
-.seg-pill.loyal       {{ background:rgba(6,182,212,0.15); color:var(--cyan-light); }}
+.seg-pill.promising       {{ background:rgba(6,182,212,0.15); color:var(--cyan-light); }}
 .seg-pill.atrisk      {{ background:rgba(245,158,11,0.15); color:var(--amber-light); }}
 .seg-pill.hibernating {{ background:rgba(100,116,139,0.15); color:var(--slate-light); }}
 td.mono {{ font-family:var(--mono); font-size:12px; font-weight:500; }}
