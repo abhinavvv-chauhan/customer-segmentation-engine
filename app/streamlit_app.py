@@ -4,6 +4,7 @@ import duckdb
 import json
 from pathlib import Path
 
+import datetime
 # ── Paths ────────────────────────────────────────────────────────────────────
 BASE_DIR = Path(__file__).parent.parent
 DB_PATH = BASE_DIR / "warehouse" / "retail.duckdb"
