@@ -1,0 +1,35 @@
+name: Scheduled Refresh
+
+on:
+  schedule:
+    - cron: '0 0 * * *' # Run daily at midnight
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  refresh_data:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up uv
+      uses: astral-sh/setup-uv@v2
+      with:
+        version: "latest"
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.12"
+
+    - name: Install dependencies
+      run: uv sync
+
+    - name: Run Data Ingestion
+      run: uv run python ingestion/pipeline.py
+
+    - name: Run dbt models
+      run: uv run dbt build --profiles-dir dbt --project-dir dbt
+
+    - name: Run ML Segmentation
+      run: uv run python -m src.segmentation.main

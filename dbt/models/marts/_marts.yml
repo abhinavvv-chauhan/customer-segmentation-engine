@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: fct_rfm
+    description: "Customer-level RFM aggregations."
+    columns:
+      - name: customer_id
+        description: "Unique customer identifier."
+        tests:
+          - unique
+          - not_null
+      - name: recency
+        description: "Days since last purchase."
+        tests:
+          - not_null
+      - name: frequency
+        description: "Number of distinct orders."
+        tests:
+          - not_null
+      - name: monetary_value
+        description: "Total revenue from customer."
+        tests:
+          - not_null

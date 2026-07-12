@@ -1,0 +1,6 @@
+retail_profile:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'c:\Users\ASUS\Desktop\data science\warehouse\retail.duckdb'

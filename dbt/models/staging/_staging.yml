@@ -1,0 +1,18 @@
+version: 2
+
+sources:
+  - name: retail
+    schema: raw
+    tables:
+      - name: raw_orders
+
+models:
+  - name: stg_orders
+    description: "Staging model for online retail orders."
+    columns:
+      - name: invoice_no
+        description: "Invoice number. Cancellations start with 'C'."
+      - name: stock_code
+        description: "Product item code."
+      - name: customer_id
+        description: "Customer ID. Can be null."
