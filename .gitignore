@@ -5,7 +5,8 @@ __pycache__/
 .ruff_cache/
 .mypy_cache/
 
-warehouse/
+warehouse/*
+!warehouse/retail.duckdb
 data/raw/
 
 dbt/target/
