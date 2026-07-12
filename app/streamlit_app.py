@@ -1077,10 +1077,10 @@ filterBtns.forEach(btn => {{
 
 // CSV Export Logic
 document.getElementById('exportCsvBtn').addEventListener('click', () => {{
-  let csv = 'Customer ID,Recency,Frequency,Monetary,Segment\n';
+  let csv = 'Customer ID,Recency,Frequency,Monetary,Segment\\n';
   const rows = currentFilter === 'all' ? D.table : D.table.filter(r => r.seg === currentFilter);
   rows.forEach(r => {{
-      csv += `${{r.id}},${{r.r}},${{r.f}},${{r.m}},${{r.seg}}\n`;
+      csv += `${{r.id}},${{r.r}},${{r.f}},${{r.m}},${{r.seg}}\\n`;
   }});
   const blob = new Blob([csv], {{ type: 'text/csv' }});
   const url = window.URL.createObjectURL(blob);
