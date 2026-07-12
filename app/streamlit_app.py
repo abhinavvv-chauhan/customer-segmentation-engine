@@ -554,7 +554,7 @@ td.mono {{ font-family:var(--mono); font-size:12px; font-weight:500; }}
 
 <!-- ═══ HERO ═══ -->
 <section class="hero" id="heroSection">
-  <div class="hero-chip"><i class="fa-solid fa-sparkles"></i> RFM &middot; K-Means &middot; Refreshed: {datetime.datetime.now().strftime("%b %d, %H:%M")}</div>
+  <div class="hero-chip"><i class="fa-solid fa-sparkles"></i> RFM &middot; K-Means &middot; Refreshed: {datetime.datetime.now(datetime.timezone(datetime.timedelta(hours=5, minutes=30))).strftime("%b %d, %H:%M")} IST</div>
   <h1>Customer Intelligence<br>Platform</h1>
   <p class="hero-sub">AI-powered segmentation revealing which customers to retain, grow, and win back — and exactly how.</p>
   <div class="hero-stats">
