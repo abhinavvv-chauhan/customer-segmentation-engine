@@ -550,12 +550,11 @@ td.mono {{ font-family:var(--mono); font-size:12px; font-weight:500; }}
     <a class="nav-link" href="#playbook">Playbook</a>
     <a class="nav-link" href="#data">Data</a>
   </div>
-  <div class="nav-badge"><span></span>Data Refreshed: {datetime.datetime.now().strftime("%b %d, %H:%M")}</div>
 </nav>
 
 <!-- ═══ HERO ═══ -->
 <section class="hero" id="heroSection">
-  <div class="hero-chip"><i class="fa-solid fa-sparkles"></i> RFM &middot; K-Means &middot; Batch Processed</div>
+  <div class="hero-chip"><i class="fa-solid fa-sparkles"></i> RFM &middot; K-Means &middot; Refreshed: {datetime.datetime.now().strftime("%b %d, %H:%M")}</div>
   <h1>Customer Intelligence<br>Platform</h1>
   <p class="hero-sub">AI-powered segmentation revealing which customers to retain, grow, and win back — and exactly how.</p>
   <div class="hero-stats">
