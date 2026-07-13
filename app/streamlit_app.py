@@ -171,6 +171,129 @@ body {{
 /* ── Particle Canvas ── */
 #particles {{ position:fixed; inset:0; z-index:0; }}
 
+/* ── Realistic Quarter Moon ── */
+#moon-wrap {{
+  position:fixed;
+  bottom:-90px;
+  right:-90px;
+  width:320px;
+  height:320px;
+  z-index:0;
+  pointer-events:none;
+}}
+
+/* Layered outer glow — atmospheric halo */
+#moon-wrap::before {{
+  content:'';
+  position:absolute;
+  inset:-60px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at 42% 42%,
+      rgba(200,230,255,0.18) 0%,
+      rgba(140,190,255,0.10) 25%,
+      rgba(100,160,255,0.05) 45%,
+      transparent 70%
+    );
+  filter:blur(18px);
+}}
+
+/* Second softer bloom ring */
+#moon-wrap::after {{
+  content:'';
+  position:absolute;
+  inset:-100px;
+  border-radius:50%;
+  background:radial-gradient(circle at 42% 42%,
+    rgba(160,210,255,0.07) 0%,
+    rgba(100,160,255,0.03) 40%,
+    transparent 65%
+  );
+  filter:blur(36px);
+}}
+
+#moon {{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  overflow:hidden;
+  /* Main lunar body colour: warm grey with faint blue-white rim */
+  background: radial-gradient(circle at 35% 30%,
+    #e8eef5 0%,
+    #c4cdd8 18%,
+    #a0aab6 38%,
+    #7d8a96 55%,
+    #5a6470 70%,
+    #3a4250 82%,
+    #1e2530 95%
+  );
+  box-shadow:
+    /* Self-shadow on dark limb */
+    inset -60px -40px 80px rgba(0,5,20,0.85),
+    /* Rim glow — light scattered atmosphere */
+    0 0 35px 8px rgba(180,220,255,0.18),
+    0 0 70px 20px rgba(130,180,255,0.10),
+    0 0 120px 40px rgba(80,140,255,0.06);
+}}
+
+/* Overlay that cuts off the moon into a quarter-disc */
+#moon-clip {{
+  position:absolute;
+  /* cover top-left three-quarters: moon sits in bottom-right corner */
+  bottom:0; right:0;
+  width:100%; height:100%;
+  border-radius:50%;
+  /* dark veil across left + top half */
+  background:linear-gradient(225deg,
+    transparent 0%,
+    transparent 48%,
+    rgba(0,4,14,0.88) 52%
+  );
+}}
+
+/* Mare / dark basaltic plains */
+#moon-mare {{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:
+    radial-gradient(ellipse 45% 30% at 55% 45%, rgba(60,70,85,0.45) 0%, transparent 100%),
+    radial-gradient(ellipse 20% 15% at 70% 28%, rgba(50,60,72,0.35) 0%, transparent 100%),
+    radial-gradient(ellipse 30% 22% at 45% 68%, rgba(55,65,78,0.28) 0%, transparent 100%);
+  mix-blend-mode: multiply;
+}}
+
+/* Terminator haze — soft boundary between lit and dark */
+#moon-terminator {{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background: radial-gradient(ellipse 12% 95% at 52% 50%,
+    rgba(0,8,24,0.55) 0%,
+    rgba(0,8,24,0.10) 60%,
+    transparent 100%
+  );
+}}
+
+/* Craters — larger impact basins */
+.crater {{
+  position:absolute;
+  border-radius:50%;
+  box-shadow:inset 2px 3px 6px rgba(0,0,0,0.6), 0 0 4px rgba(255,255,255,0.08);
+}}
+
+/* Subtle surface specular — sunlit grain */
+#moon-specular {{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background: radial-gradient(ellipse 55% 50% at 30% 28%,
+    rgba(255,255,255,0.22) 0%,
+    rgba(255,255,255,0.08) 30%,
+    transparent 65%
+  );
+}}
+
 /* ── Layout ── */
 .app {{ position:relative; z-index:1; max-width:1360px; margin:0 auto; padding:0 32px 64px; }}
 
@@ -534,6 +657,27 @@ td.mono {{ font-family:var(--mono); font-size:12px; font-weight:500; }}
 <!-- Animated background -->
 <div class="mesh-bg"></div>
 <canvas id="particles"></canvas>
+
+<!-- ═══ QUARTER MOON (bottom-right) ═══ -->
+<div id="moon-wrap">
+  <div id="moon">
+    <!-- dark mare regions -->
+    <div id="moon-mare"></div>
+    <!-- terminator soft edge -->
+    <div id="moon-terminator"></div>
+    <!-- craters -->
+    <div class="crater" style="width:38px;height:38px;top:28%;left:38%;background:radial-gradient(circle at 38% 35%,rgba(180,185,195,0.5) 0%,rgba(90,100,115,0.8) 55%,rgba(30,38,50,0.9) 100%);"></div>
+    <div class="crater" style="width:22px;height:22px;top:44%;left:58%;background:radial-gradient(circle at 38% 35%,rgba(175,180,192,0.45) 0%,rgba(85,95,108,0.75) 55%,rgba(28,36,48,0.88) 100%);"></div>
+    <div class="crater" style="width:15px;height:15px;top:34%;left:62%;background:radial-gradient(circle at 38% 35%,rgba(170,175,188,0.4) 0%,rgba(80,90,105,0.7) 55%,rgba(25,33,45,0.85) 100%);"></div>
+    <div class="crater" style="width:28px;height:28px;top:55%;left:42%;background:radial-gradient(circle at 38% 35%,rgba(178,183,193,0.48) 0%,rgba(88,98,112,0.78) 55%,rgba(29,37,49,0.89) 100%);"></div>
+    <div class="crater" style="width:18px;height:18px;top:40%;left:48%;background:radial-gradient(circle at 38% 35%,rgba(172,177,190,0.42) 0%,rgba(82,92,107,0.72) 55%,rgba(26,34,46,0.86) 100%);"></div>
+    <div class="crater" style="width:10px;height:10px;top:30%;left:52%;background:radial-gradient(circle at 38% 35%,rgba(168,173,185,0.38) 0%,rgba(78,88,102,0.68) 55%,rgba(23,31,43,0.82) 100%);"></div>
+    <!-- Specular highlight -->
+    <div id="moon-specular"></div>
+    <!-- quarter-clip dark overlay -->
+    <div id="moon-clip"></div>
+  </div>
+</div>
 
 <!-- Custom Cursor -->
 <div class="cursor-dot" id="cursorDot"></div>
