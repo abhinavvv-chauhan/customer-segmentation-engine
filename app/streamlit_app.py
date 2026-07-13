@@ -17,12 +17,14 @@ st.set_page_config(
     initial_sidebar_state="collapsed",
 )
 
-# Hide all Streamlit UI
+# Hide all Streamlit UI and fix double scrollbars
 st.markdown(
     """<style>
 #MainMenu,footer,header,[data-testid="stToolbar"],[data-testid="stAppDeployButton"],
 .stAppDeployButton,.block-container{padding:0!important;max-width:100%!important;}
 [data-testid="stVerticalBlock"]{gap:0!important;}
+body { overflow: hidden !important; }
+iframe { height: 100vh !important; border: none !important; }
 </style>""",
     unsafe_allow_html=True,
 )
