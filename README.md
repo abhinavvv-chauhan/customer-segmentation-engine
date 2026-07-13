@@ -12,7 +12,7 @@
 ---
 
 ## Architecture & Stack
-- **Ingestion**: `dlt` (Declarative EL directly to DuckDB)
+- **Ingestion**: `dlt` (Declarative EL directly to DuckDB) + **Deterministic Synthetic Data Generator** (Simulates a live, continuously updating e-commerce database to cause real-time model drift)
 - **Warehouse**: DuckDB (Local, fast analytical DB)
 - **Transform**: `dbt-core` (SQL models, tests, and documentation)
 - **Machine Learning**: `scikit-learn`, `pandas`, `pandera`
